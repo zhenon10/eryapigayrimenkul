@@ -7,5 +7,5 @@ export const revalidate = 3600;
 export const metadata: Metadata = { title: "Hakkımızda" };
 
 export default function AboutPage() {
-  return <TextPage eyebrow="Kurumsal" title="Hakkımızda" text={getSettings().aboutText} />;
+  return <TextPage title="Hakkımızda" text={getSettings().aboutText} />;
 }

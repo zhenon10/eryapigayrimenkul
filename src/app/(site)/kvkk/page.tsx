@@ -7,5 +7,5 @@ export const revalidate = 3600;
 export const metadata: Metadata = { title: "KVKK Aydınlatma Metni" };
 
 export default function KvkkPage() {
-  return <TextPage eyebrow="Yasal" title="KVKK Aydınlatma Metni" text={getSettings().kvkkText} />;
+  return <TextPage title="KVKK Aydınlatma Metni" text={getSettings().kvkkText} />;
 }

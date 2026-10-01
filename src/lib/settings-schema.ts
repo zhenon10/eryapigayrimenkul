@@ -2,6 +2,10 @@ import { z } from "zod";
 
 const str = (max = 300) => z.string().trim().max(max).default("");
 
+export const DEFAULT_HERO_TITLE = "Balıkesir'de satılık ve kiralık emlak";
+/** İlk sürümün varsayılanı; sonu iki noktayla bitip ayrı bir italik vurguya bağlanıyordu. */
+export const LEGACY_HERO_TITLE = "Balıkesir'in Güvenilir Gayrimenkul & Yatırım Ortağı:";
+
 export const statSchema = z.object({
   value: z.string().trim().min(1).max(20),
   label: z.string().trim().min(1).max(60),
@@ -25,8 +29,7 @@ export const siteSettingsSchema = z.object({
   licenseNo: str(40),
   mapEmbedUrl: z.union([z.literal(""), z.url().startsWith("https://")]).default(""),
   mapsLink: z.union([z.literal(""), z.url()]).default(""),
-  heroTitle: str(160).default("Balıkesir'in Güvenilir Gayrimenkul & Yatırım Ortağı:"),
-  heroAccent: str(60).default("Er Yapı Emlak"),
+  heroTitle: str(160).default(DEFAULT_HERO_TITLE),
   heroText: str(400),
   heroImageId: z.number().int().positive().nullable().default(null),
   stats: z.array(statSchema).max(4).default([]),

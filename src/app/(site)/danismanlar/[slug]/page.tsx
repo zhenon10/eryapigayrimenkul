@@ -23,18 +23,18 @@ export default async function AgentPage({ params }: PageProps<"/danismanlar/[slu
 
   return (
     <>
-      <section className="bg-ink text-white">
-        <div className="container-site flex flex-col gap-8 py-14 md:flex-row md:items-center">
+      <section className="border-b border-line bg-canvas">
+        <div className="container-site flex flex-col gap-8 py-10 md:flex-row md:items-center">
           <AgentAvatar agent={agent} size="lg" />
-          <div className="flex flex-1 flex-col gap-2">
-            <span className="eyebrow text-accent-bright">{agent.title || "Gayrimenkul Danışmanı"}</span>
-            <h1 className="font-display text-headline-md font-semibold md:text-headline">{agent.name}</h1>
-            {agent.specialty && <p className="text-ink-muted">{agent.specialty}</p>}
+          <div className="flex flex-1 flex-col gap-1">
+            <h1 className="font-display text-[2rem] leading-tight font-semibold md:text-headline">{agent.name}</h1>
+            <p className="font-semibold text-accent-strong">{agent.title || "Gayrimenkul Danışmanı"}</p>
+            {agent.specialty && <p className="text-muted">{agent.specialty}</p>}
           </div>
           <div className="flex w-full flex-col gap-2 md:w-64">
             <AgentContactButtons agent={agent} />
             {agent.email && (
-              <a href={`mailto:${agent.email}`} className="btn btn-sm border border-white/20 text-white hover:bg-white/10">
+              <a href={`mailto:${agent.email}`} className="btn-outline btn-sm">
                 <Mail className="size-4" aria-hidden /> {agent.email}
               </a>
             )}
@@ -50,7 +50,7 @@ export default async function AgentPage({ params }: PageProps<"/danismanlar/[slu
 
       <section className="bg-canvas py-16">
         <div className="container-site flex flex-col gap-8">
-          <h2 className="font-display text-headline-md font-semibold">{agent.name} Portföyü</h2>
+          <h2 className="font-display text-headline-md font-semibold">{agent.name} portföyü</h2>
           {agent.listings.length ? (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {agent.listings.map((l) => (

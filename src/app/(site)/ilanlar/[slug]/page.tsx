@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { Check, ExternalLink, MapPin, PlayCircle, Video } from "lucide-react";
+import { Check, ExternalLink, MapPin, Phone, PlayCircle, Video } from "lucide-react";
+import { WhatsApp } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { Breadcrumbs } from "@/components/site/breadcrumbs";
-import { AgentAvatar, AgentContactButtons } from "@/components/site/agent-card";
+import { AgentAvatar } from "@/components/site/agent-card";
 import { Gallery } from "@/components/site/gallery";
 import { InquiryForm } from "@/components/site/inquiry-form";
 import { ListingCard } from "@/components/site/listing-card";
@@ -155,7 +156,7 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
           </header>
 
           <section aria-labelledby="ozellikler">
-            <h2 id="ozellikler" className="mb-4 font-display text-headline-sm font-semibold">İlan Bilgileri</h2>
+            <h2 id="ozellikler" className="mb-4 font-display text-headline-sm font-semibold">İlan bilgileri</h2>
             <dl className="grid overflow-hidden rounded-lg border border-line sm:grid-cols-2">
               {visibleSpecs.map(([k, v]) => (
                 <div key={k} className="-mb-px flex justify-between gap-4 border-b border-line px-4 py-3 text-sm sm:odd:border-r">
@@ -175,7 +176,7 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
 
           {l.features.length > 0 && (
             <section aria-labelledby="donanim">
-              <h2 id="donanim" className="mb-4 font-display text-headline-sm font-semibold">Öne Çıkan Özellikler</h2>
+              <h2 id="donanim" className="mb-4 font-display text-headline-sm font-semibold">Özellikler</h2>
               <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2 md:grid-cols-3">
                 {l.features.map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm">
@@ -235,11 +236,32 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
                   </span>
                 </Link>
               )}
-              <AgentContactButtons agent={{ phone: contactPhone, whatsapp: contactWhatsapp }} text={waText} />
+              <div className="flex flex-col gap-2">
+                {contactWhatsapp && (
+                  <a
+                    href={whatsappHref(contactWhatsapp, waText)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-accent min-h-12 text-[15px] font-bold"
+                  >
+                    <WhatsApp className="size-5" aria-hidden /> WhatsApp&apos;tan sor
+                  </a>
+                )}
+                {contactPhone && (
+                  <a href={telHref(contactPhone)} className="btn-outline">
+                    <Phone className="size-4" aria-hidden /> <span className="tabular">{contactPhone}</span>
+                  </a>
+                )}
+                {!contactWhatsapp && !contactPhone && (
+                  <a href="#bilgi-al" className="btn-accent">
+                    Bilgi iste
+                  </a>
+                )}
+              </div>
             </div>
 
             <div id="bilgi-al" className="card p-6">
-              <h2 className="mb-1 font-display text-headline-sm font-semibold">Bilgi Alın</h2>
+              <h2 className="mb-1 font-display text-headline-sm font-semibold">Bilgi alın</h2>
               <p className="mb-5 text-sm text-muted">Bu ilanla ilgili sorularınız için bilgilerinizi bırakın.</p>
               <InquiryForm
                 kind="ilan"
@@ -257,7 +279,7 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
       {similar.length > 0 && (
         <section className="bg-canvas py-16">
           <div className="container-site flex flex-col gap-8">
-            <h2 className="font-display text-headline-md font-semibold">Benzer İlanlar</h2>
+            <h2 className="font-display text-headline-md font-semibold">Benzer ilanlar</h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {similar.map((x) => (
                 <ListingCard key={x.id} listing={x} />
@@ -267,16 +289,28 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
         </section>
       )}
 
-      {contactPhone && (
+      {(contactWhatsapp || contactPhone) && (
+        // Mobilde sabit iletişim çubuğu: WhatsApp birincil, telefon ikincil.
         <div className="sticky bottom-0 z-30 border-t border-line bg-white/95 p-3 backdrop-blur lg:hidden">
-          <div className="grid grid-cols-2 gap-2">
-            <a href={telHref(contactPhone)} className="btn-primary">Hemen Ara</a>
+          <div className="flex gap-2">
+            {contactPhone && (
+              <a href={telHref(contactPhone)} className="btn-outline shrink-0 px-4" aria-label={`Ara: ${contactPhone}`}>
+                <Phone className="size-4" aria-hidden /> Ara
+              </a>
+            )}
             {contactWhatsapp ? (
-              <a href={whatsappHref(contactWhatsapp, waText)} target="_blank" rel="noopener noreferrer" className="btn-accent">
-                WhatsApp
+              <a
+                href={whatsappHref(contactWhatsapp, waText)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-accent flex-1 font-bold"
+              >
+                <WhatsApp className="size-5" aria-hidden /> WhatsApp&apos;tan sor
               </a>
             ) : (
-              <a href="#bilgi-al" className="btn-accent">Bilgi Al</a>
+              <a href="#bilgi-al" className="btn-accent flex-1">
+                Bilgi iste
+              </a>
             )}
           </div>
         </div>

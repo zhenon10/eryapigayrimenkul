@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
 import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+// Başlıklar için sakin, editoryal bir serif; Playfair'in yüksek kontrastlı "lüks" görünümünden kaçınır.
+const serif = Source_Serif_4({
+  variable: "--font-serif",
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["500", "600"],
 });
 
 const jakarta = Plus_Jakarta_Sans({
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="tr" className={`${playfair.variable} ${jakarta.variable}`}>
+    <html lang="tr" className={`${serif.variable} ${jakarta.variable}`}>
       <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   );

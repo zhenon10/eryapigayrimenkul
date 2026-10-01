@@ -20,9 +20,8 @@ export default function ValuationPage() {
   return (
     <>
       <PageHero
-        eyebrow="Ücretsiz Değerleme"
-        title="Mülkünüzün Gerçek Piyasa Değerini Öğrenin"
-        text="Satmayı veya kiraya vermeyi düşündüğünüz mülkünüz için uzman ekibimizden ücretsiz, bağlayıcı olmayan bir değerlendirme alın."
+        title="Ücretsiz değerleme"
+        text="Satmayı ya da kiraya vermeyi düşündüğünüz mülk için bölgedeki güncel satış ve kira fiyatlarına dayanan, ücretsiz ve bağlayıcı olmayan bir fiyat görüşü alın."
       />
       <section className="container-site grid gap-12 py-16 lg:grid-cols-12">
         <ol className="flex flex-col gap-8 lg:col-span-5">

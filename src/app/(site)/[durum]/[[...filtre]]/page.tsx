@@ -80,8 +80,8 @@ export default async function LandingPage(props: Props) {
           }}
         />
       )}
-      <PageHero eyebrow="Balıkesir Emlak" title={landingHeading(l)} text={content?.intro || landingIntro(l, s.companyName)}>
-        <p className="text-micro font-semibold tracking-wide text-accent-bright">{formatNumber(result.total)} ilan</p>
+      <PageHero title={landingHeading(l)} text={content?.intro || landingIntro(l, s.companyName)}>
+        <p className="tabular text-label font-semibold text-ink">{formatNumber(result.total)} ilan</p>
       </PageHero>
       <ListingsView
         filters={filters}

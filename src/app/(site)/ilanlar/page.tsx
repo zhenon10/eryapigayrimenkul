@@ -55,7 +55,7 @@ export default async function ListingsPage({ searchParams }: PageProps<"/ilanlar
 
   return (
     <>
-      <PageHero eyebrow="Portföy" title={describe(f)} text={`${formatNumber(result.total)} ilan listeleniyor.`} />
+      <PageHero title={describe(f)} text={`${formatNumber(result.total)} ilan listeleniyor.`} />
       <ListingsView filters={f} result={result} pageHref={pageHref} hasFilters={Object.keys(raw).length > 0} />
     </>
   );

@@ -45,7 +45,6 @@ export function SettingsForm({ settings: s, heroImage }: { settings: SiteSetting
       <Panel title="Ana Sayfa Giriş Bölümü">
         <div className="grid gap-4 sm:grid-cols-2">
           {input("heroTitle", "Başlık", { wide: true })}
-          {input("heroAccent", "Vurgulu Kısım", { hint: "Başlığın sonunda italik ve amber renkte gösterilir." })}
           {input("tagline", "Slogan")}
           <div className="sm:col-span-2">{area("heroText", "Tanıtım Metni", 3, "Giriş bölümünde ve alt bilgide görünür.")}</div>
           <div className="sm:col-span-2">

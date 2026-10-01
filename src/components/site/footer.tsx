@@ -38,12 +38,12 @@ export function Footer({ settings: s }: { settings: SiteSettings }) {
         </div>
 
         <FooterCol title="Portföy" className="lg:col-span-2">
-          <FooterLink href="/satilik">Satılık İlanlar</FooterLink>
-          <FooterLink href="/kiralik">Kiralık İlanlar</FooterLink>
-          <FooterLink href="/satilik/arsa">Satılık Arsa</FooterLink>
-          <FooterLink href="/satilik/isyeri">Satılık İş Yeri</FooterLink>
-          <FooterLink href="/kiralik/isyeri">Kiralık İş Yeri</FooterLink>
-          <FooterLink href="/degerleme">Ücretsiz Değerleme</FooterLink>
+          <FooterLink href="/satilik">Satılık ilanlar</FooterLink>
+          <FooterLink href="/kiralik">Kiralık ilanlar</FooterLink>
+          <FooterLink href="/satilik/arsa">Satılık arsa</FooterLink>
+          <FooterLink href="/satilik/isyeri">Satılık iş yeri</FooterLink>
+          <FooterLink href="/kiralik/isyeri">Kiralık iş yeri</FooterLink>
+          <FooterLink href="/degerleme">Ücretsiz değerleme</FooterLink>
         </FooterCol>
 
         <FooterCol title="Bölgeler" className="lg:col-span-2">

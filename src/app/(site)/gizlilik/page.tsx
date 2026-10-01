@@ -7,5 +7,5 @@ export const revalidate = 3600;
 export const metadata: Metadata = { title: "Gizlilik Politikası" };
 
 export default function PrivacyPage() {
-  return <TextPage eyebrow="Yasal" title="Gizlilik Politikası" text={getSettings().privacyText} />;
+  return <TextPage title="Gizlilik Politikası" text={getSettings().privacyText} />;
 }

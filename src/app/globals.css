@@ -22,7 +22,7 @@
   --color-danger: #b91c1c;
   --color-success: #15803d;
 
-  --font-display: var(--font-playfair), Georgia, serif;
+  --font-display: var(--font-serif), Georgia, serif;
   --font-sans: var(--font-jakarta), "Segoe UI", system-ui, sans-serif;
 
   --text-display: 3.5rem;
@@ -73,12 +73,9 @@
   @apply mx-auto w-full max-w-site px-5 md:px-8 lg:px-12;
 }
 
-@utility eyebrow {
-  @apply flex items-center gap-2 text-micro font-bold tracking-[0.08em] text-accent-strong uppercase;
-  &::before {
-    content: "";
-    @apply h-0.5 w-8 bg-accent;
-  }
+/* Metin bağlantısı: düğme yerine kullanılan sade "Tümünü gör →" tarzı bağlantılar. */
+@utility text-link {
+  @apply inline-flex items-center gap-1 text-label font-semibold text-ink underline decoration-line-strong decoration-1 underline-offset-4 transition hover:decoration-ink;
 }
 
 @utility glass {

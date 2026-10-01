@@ -20,7 +20,7 @@ export function RemovedListingView({ listing: l }: { listing: RemovedListing }) 
         <span className="flex size-14 items-center justify-center rounded-full bg-accent-tint text-accent-strong">
           <ArchiveX className="size-7" aria-hidden />
         </span>
-        <span className="eyebrow">İlan No: {l.refNo}</span>
+        <span className="tabular text-label font-semibold text-muted">İlan No: {l.refNo}</span>
         <h1 className="max-w-2xl font-display text-headline-md font-semibold">Bu ilan yayından kaldırıldı</h1>
         <p className="max-w-xl text-muted">
           <strong className="text-ink">{l.title}</strong> ({[l.neighborhood, district].filter(Boolean).join(", ")} ·{" "}
@@ -39,7 +39,7 @@ export function RemovedListingView({ listing: l }: { listing: RemovedListing }) 
       {similar.length > 0 && (
         <section className="bg-canvas py-16">
           <div className="container-site flex flex-col gap-8">
-            <h2 className="font-display text-headline-md font-semibold">Benzer İlanlar</h2>
+            <h2 className="font-display text-headline-md font-semibold">Benzer ilanlar</h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {similar.map((x) => (
                 <ListingCard key={x.id} listing={x} />

@@ -24,7 +24,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <PageHero eyebrow="İletişim" title="Size Nasıl Yardımcı Olabiliriz?" text="Sorularınız, alım-satım ve kiralama talepleriniz için bize ulaşın." />
+      <PageHero title="İletişim" text="Alım, satım ve kiralama talepleriniz için arayın, yazın ya da ofisimize uğrayın." />
       <section className="container-site grid gap-10 py-16 lg:grid-cols-12">
         <div className="flex flex-col gap-4 lg:col-span-5">
           {items.map(({ icon: Icon, label, value, href }) => {
@@ -62,7 +62,7 @@ export default function ContactPage() {
           )}
         </div>
         <div className="card p-6 md:p-8 lg:col-span-7">
-          <h2 className="mb-6 font-display text-headline-sm font-semibold">Bize Yazın</h2>
+          <h2 className="mb-6 font-display text-headline-sm font-semibold">Bize yazın</h2>
           <InquiryForm kind="iletisim" kvkkLink={!!s.kvkkText} />
         </div>
       </section>

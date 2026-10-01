@@ -15,9 +15,8 @@ export default function AgentsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Ekibimiz"
-        title="Gayrimenkul Danışmanlarımız"
-        text="Bölge dinamiklerine hâkim, mevzuata vakıf danışmanlarımızla doğrudan iletişime geçin."
+        title="Danışmanlarımız"
+        text="İlanlarla ilgili sorularınız için danışmanlarımıza doğrudan ulaşabilirsiniz."
       />
       <section className="container-site py-16">
         {agents.length ? (

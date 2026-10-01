@@ -127,7 +127,7 @@ async function main() {
     ...getSettings(),
     heroImageId: hero.id,
     heroText:
-      "Karesi, Altıeylül ve Körfez bölgesinde seçkin konutlar, villalar, arsa ve ticari gayrimenkul portföyü ile hayallerinizi güvenle gerçeğe dönüştürüyoruz.",
+      "Karesi, Altıeylül ve Körfez bölgesinde daire, villa, arsa ve iş yeri alım-satım ve kiralamasında aracılık yapıyoruz.",
   });
 
   console.log(`✓ ${agentData.length} danışman ve ${listingData.length} demo ilan eklendi.`);
