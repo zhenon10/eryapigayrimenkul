@@ -41,7 +41,8 @@ export function Footer({ settings: s }: { settings: SiteSettings }) {
           <FooterLink href="/satilik">Satılık İlanlar</FooterLink>
           <FooterLink href="/kiralik">Kiralık İlanlar</FooterLink>
           <FooterLink href="/satilik/arsa">Satılık Arsa</FooterLink>
-          <FooterLink href="/ilanlar?kategori=ticari">Ticari Gayrimenkul</FooterLink>
+          <FooterLink href="/satilik/isyeri">Satılık İş Yeri</FooterLink>
+          <FooterLink href="/kiralik/isyeri">Kiralık İş Yeri</FooterLink>
           <FooterLink href="/degerleme">Ücretsiz Değerleme</FooterLink>
         </FooterCol>
 

@@ -15,7 +15,7 @@ export function navItems(s: SiteSettings): NavItem[] {
     { href: "/satilik", label: "Satılık" },
     { href: "/kiralik", label: "Kiralık" },
     { href: "/satilik/arsa", label: "Arsa" },
-    { href: "/ilanlar?kategori=ticari", label: "Ticari" },
+    { href: "/satilik/isyeri", label: "İş Yeri" },
     { href: "/danismanlar", label: "Danışmanlar" },
     ...(s.aboutText ? [{ href: "/hakkimizda", label: "Hakkımızda" }] : []),
     { href: "/iletisim", label: "İletişim" },

@@ -8,10 +8,11 @@ import { AgentAvatar, AgentContactButtons } from "@/components/site/agent-card";
 import { Gallery } from "@/components/site/gallery";
 import { InquiryForm } from "@/components/site/inquiry-form";
 import { ListingCard } from "@/components/site/listing-card";
+import { RemovedListingView } from "@/components/site/removed-listing";
 import { DISTRICTS, LISTING_STATUSES, LISTING_TYPES, isLandType, labelOf, type District, type ListingType } from "@/lib/constants";
 import { formatDate, formatNumber, formatPrice, telHref, whatsappHref } from "@/lib/format";
 import { mediaUrl } from "@/lib/media-url";
-import { findCurrentListingSlug, getListingBySlug, getSimilarListings } from "@/lib/queries";
+import { getListingBySlug, getSimilarListings, resolveMissingListing } from "@/lib/queries";
 import { absoluteUrl, landingPath, typeSeoLabel } from "@/lib/seo";
 import { getSettings } from "@/lib/settings";
 
@@ -23,8 +24,13 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps<"/ilanlar/[slug]">): Promise<Metadata> {
-  const listing = getListingBySlug((await params).slug);
-  if (!listing) return {};
+  const { slug } = await params;
+  const listing = getListingBySlug(slug);
+  if (!listing) {
+    const missing = resolveMissingListing(slug);
+    if (missing?.kind !== "removed") return {};
+    return { title: `${missing.listing.title} – Yayından Kaldırıldı`, robots: { index: false, follow: true } };
+  }
   const cover = listing.images[0];
   // Başlık konum ve tipi de içersin: "… – Altıeylül Kiralık Daire" aramalarla eşleşir.
   const where = `${labelOf(DISTRICTS, listing.district)} ${labelOf(LISTING_STATUSES, listing.status)} ${typeSeoLabel(listing.type)}`;
@@ -44,8 +50,9 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
   const { slug } = await params;
   const l = getListingBySlug(slug);
   if (!l) {
-    const current = findCurrentListingSlug(slug);
-    if (current && current !== slug) permanentRedirect(`/ilanlar/${current}`);
+    const missing = resolveMissingListing(slug);
+    if (missing?.kind === "redirect") permanentRedirect(`/ilanlar/${missing.slug}`);
+    if (missing?.kind === "removed") return <RemovedListingView listing={missing.listing} />;
     notFound();
   }
   const s = getSettings();

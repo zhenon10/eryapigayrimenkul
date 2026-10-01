@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { agents, listingImages, listings } from "@/db/schema";
+import { agents, listingImages, listings, removedListings } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { DISTRICTS, LISTING_STATUSES, LISTING_TYPES, values } from "@/lib/constants";
 import { slugify } from "@/lib/format";
@@ -97,14 +97,26 @@ export async function saveListing(id: number | null, _prev: FormState, formData:
     let lid = id;
     if (lid === null) {
       const tmp = `tmp-${crypto.randomUUID()}`;
-      lid = tx.insert(listings).values({ ...data, refNo: tmp, slug: tmp }).returning({ id: listings.id }).get().id;
+      lid = tx
+        .insert(listings)
+        .values({ ...data, refNo: tmp, slug: tmp, publishedAt: data.isPublished ? new Date() : null })
+        .returning({ id: listings.id })
+        .get().id;
       const refNo = refNoFor(lid);
       tx.update(listings).set({ refNo, slug: slugFor(data.title, refNo) }).where(eq(listings.id, lid)).run();
     } else {
-      const existing = tx.select({ refNo: listings.refNo }).from(listings).where(eq(listings.id, lid)).get();
+      const existing = tx
+        .select({ refNo: listings.refNo, publishedAt: listings.publishedAt })
+        .from(listings)
+        .where(eq(listings.id, lid))
+        .get();
       if (!existing) return null;
       tx.update(listings)
-        .set({ ...data, slug: slugFor(data.title, existing.refNo) })
+        .set({
+          ...data,
+          slug: slugFor(data.title, existing.refNo),
+          publishedAt: existing.publishedAt ?? (data.isPublished ? new Date() : null),
+        })
         .where(eq(listings.id, lid))
         .run();
       const before = tx.select({ id: listingImages.mediaId }).from(listingImages).where(eq(listingImages.listingId, lid)).all();
@@ -130,7 +142,18 @@ export async function saveListing(id: number | null, _prev: FormState, formData:
 export async function deleteListing(id: number) {
   await requireUser();
   const images = db.select({ id: listingImages.mediaId }).from(listingImages).where(eq(listingImages.listingId, id)).all();
-  db.delete(listings).where(eq(listings.id, id)).run();
+  const listing = db.select().from(listings).where(eq(listings.id, id)).get();
+  db.transaction((tx) => {
+    // Daha önce yayında olmuşsa eski adres "yayından kaldırıldı" sayfası göstermeye devam etsin.
+    if (listing?.publishedAt) {
+      const { refNo, title, status, type, district, neighborhood } = listing;
+      tx.insert(removedListings)
+        .values({ refNo, title, status, type, district, neighborhood })
+        .onConflictDoNothing()
+        .run();
+    }
+    tx.delete(listings).where(eq(listings.id, id)).run();
+  });
   await deleteMedia(images.map((i) => i.id));
   revalidatePath("/", "layout");
   redirect("/panel/ilanlar");
@@ -143,7 +166,11 @@ export async function setListingFlag(id: number, flag: "isPublished" | "isFeatur
     if (!hasImage) return { ok: false, message: "Fotoğrafı olmayan ilan yayına alınamaz." };
   }
   db.update(listings)
-    .set(flag === "isPublished" ? { isPublished: value } : { isFeatured: value })
+    .set(
+      flag === "isPublished"
+        ? { isPublished: value, ...(value ? { publishedAt: sql`coalesce(${listings.publishedAt}, unixepoch())` } : {}) }
+        : { isFeatured: value },
+    )
     .where(eq(listings.id, id))
     .run();
   revalidatePath("/", "layout");

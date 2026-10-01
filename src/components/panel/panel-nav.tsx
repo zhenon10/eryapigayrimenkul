@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, Inbox, LayoutDashboard, Settings, UserCog, Users } from "lucide-react";
+import { Building2, Inbox, LayoutDashboard, MapPinned, Settings, UserCog, Users } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 export function PanelNav({ isAdmin, newInquiries }: { isAdmin: boolean; newInquiries: number }) {
@@ -12,6 +12,7 @@ export function PanelNav({ isAdmin, newInquiries }: { isAdmin: boolean; newInqui
     { href: "/panel/ilanlar", label: "İlanlar", icon: Building2 },
     { href: "/panel/danismanlar", label: "Danışmanlar", icon: Users },
     { href: "/panel/talepler", label: "Talepler", icon: Inbox, badge: newInquiries },
+    { href: "/panel/bolge-sayfalari", label: "Bölge Sayfaları", icon: MapPinned },
     { href: "/panel/ayarlar", label: "Site Ayarları", icon: Settings },
     ...(isAdmin ? [{ href: "/panel/kullanicilar", label: "Kullanıcılar", icon: UserCog }] : []),
   ];

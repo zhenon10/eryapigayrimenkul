@@ -55,6 +55,8 @@ scripts/             CLI: kullanıcı oluşturma, demo verisi
 - **Bölge/kategori sayfaları:** `/satilik`, `/kiralik/daire`, `/satilik/edremit`, `/satilik/villa/edremit`.
   Başlık, açıklama ve tanıtım metni otomatik üretilir (ör. "Altıeylül Kiralık Daire İlanları – Balıkesir").
   Yayında ilanı olmayan kombinasyonlar ziyaretçiye açıktır ama `noindex` alır ve sitemap'e girmez.
+- **Bölge sayfası içeriği** panelde **Bölge Sayfaları** bölümünden girilir. Her sayfa için üç alan var: meta açıklama, giriş metni ve ilanların altında gösterilen "Rehber" içeriği. Boş bırakılan alanlar şablon metne düşer.
+- **Kaldırılan ilanlar:** Bir kez yayınlanmış ilan taslağa alınır ya da silinirse eski adresi "Bu ilan yayından kaldırıldı" sayfasını gösterir. Bu sayfa benzer ilanlara ve bölge sayfasına bağlantı verir, `noindex`'tir. Hiç yayınlanmamış taslaklar 404 döner.
 - `/ilanlar?durum=…&tip=…&ilce=…` adresleri karşılık gelen bölge sayfasına 308 ile yönlendirilir.
   Fiyat, kelime veya sıralama içeren filtreli adresler `noindex`'tir.
 - **Yapılandırılmış veri:**

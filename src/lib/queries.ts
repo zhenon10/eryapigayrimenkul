@@ -4,7 +4,7 @@ import { z } from "zod";
 import { and, asc, count, desc, eq, gte, inArray, like, lte, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import { db } from "@/db";
-import { agents, listingImages, listings, media } from "@/db/schema";
+import { agents, landingContent, listingImages, listings, media, removedListings } from "@/db/schema";
 import { DISTRICTS, LISTING_STATUSES, LISTING_TYPES, TYPE_GROUPS, typesInGroup, values } from "./constants";
 import type { ImageRef } from "./media-url";
 
@@ -171,17 +171,31 @@ export function getRoomOptions() {
     .map((r) => r.rooms);
 }
 
-/** Başlık değişince slug da değişir; eski bağlantılar sondaki ilan numarasından bulunur. */
-export function findCurrentListingSlug(oldSlug: string) {
-  const ref = oldSlug.match(/-(er-\d+)$/)?.[1]?.toUpperCase();
+export type RemovedListing = {
+  refNo: string;
+  title: string;
+  status: "satilik" | "kiralik";
+  type: string;
+  district: string;
+  neighborhood: string;
+};
+
+/**
+ * Yayında bulunamayan bir ilan adresinin ne olduğunu çözer (sondaki ilan numarasından):
+ * - başlık değişmiş, ilan hâlâ yayında → yeni adrese yönlendir
+ * - bir kez yayınlanmış, sonra taslağa alınmış ya da silinmiş → "yayından kaldırıldı" sayfası
+ * - hiç yayınlanmamış taslak veya bilinmeyen numara → 404
+ */
+export function resolveMissingListing(
+  slug: string,
+): { kind: "redirect"; slug: string } | { kind: "removed"; listing: RemovedListing } | null {
+  const ref = slug.match(/-(er-\d+)$/)?.[1]?.toUpperCase();
   if (!ref) return null;
-  return (
-    db
-      .select({ slug: listings.slug })
-      .from(listings)
-      .where(and(eq(listings.refNo, ref), eq(listings.isPublished, true)))
-      .get()?.slug ?? null
-  );
+  const row = db.select().from(listings).where(eq(listings.refNo, ref)).get();
+  if (row?.isPublished) return row.slug === slug ? null : { kind: "redirect", slug: row.slug };
+  if (row?.publishedAt) return { kind: "removed", listing: row };
+  const removed = db.select().from(removedListings).where(eq(removedListings.refNo, ref)).get();
+  return removed ? { kind: "removed", listing: removed } : null;
 }
 
 export function getListingBySlug(slug: string) {
@@ -283,3 +297,8 @@ export function countFor(rows: ReturnType<typeof getLandingCounts>, f: { status:
     .filter((r) => r.status === f.status && (!f.type || r.type === f.type) && (!f.district || r.district === f.district))
     .reduce((sum, r) => sum + r.n, 0);
 }
+
+/** Bölge sayfasının panelden girilmiş özgün içeriği (yoksa şablon metin kullanılır). */
+export const getLandingContent = cache((path: string) =>
+  db.select().from(landingContent).where(eq(landingContent.path, path)).get() ?? null,
+);

@@ -89,6 +89,9 @@ export const listings = sqliteTable(
     agentId: integer("agent_id").references(() => agents.id, { onDelete: "set null" }),
     isFeatured: integer("is_featured", { mode: "boolean" }).notNull().default(false),
     isPublished: integer("is_published", { mode: "boolean" }).notNull().default(false),
+    // İlk yayına alınma anı. Doluysa ilan bir kez herkese açılmış demektir; taslağa alınınca
+    // adresi 404 yerine "yayından kaldırıldı" sayfası gösterir.
+    publishedAt: integer("published_at", { mode: "timestamp" }),
     ...timestamps,
   },
   (t) => [
@@ -131,6 +134,28 @@ export const inquiries = sqliteTable(
   (t) => [index("inquiries_state_idx").on(t.state, t.createdAt)],
 );
 
+/** Silinen ama daha önce yayında olmuş ilanların izi: eski adresleri anlamlı bir sayfa göstersin. */
+export const removedListings = sqliteTable("removed_listings", {
+  refNo: text("ref_no").primaryKey(),
+  title: text("title").notNull(),
+  status: text("status", { enum: ["satilik", "kiralik"] }).notNull(),
+  type: text("type").notNull(),
+  district: text("district").notNull(),
+  neighborhood: text("neighborhood").notNull().default(""),
+  removedAt: integer("removed_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+/** Bölge/kategori sayfası başına özgün içerik; anahtar sayfa yoludur (ör. `/kiralik/daire/altieylul`). */
+export const landingContent = sqliteTable("landing_content", {
+  path: text("path").primaryKey(),
+  intro: text("intro").notNull().default(""),
+  body: text("body").notNull().default(""),
+  metaDescription: text("meta_description").notNull().default(""),
+  updatedAt: timestamps.updatedAt,
+});
+
 export const settings = sqliteTable("settings", {
   key: text("key").primaryKey(),
   value: text("value", { mode: "json" }).$type<SiteSettings>().notNull(),
@@ -142,3 +167,4 @@ export type Media = typeof media.$inferSelect;
 export type Agent = typeof agents.$inferSelect;
 export type Listing = typeof listings.$inferSelect;
 export type Inquiry = typeof inquiries.$inferSelect;
+export type LandingContent = typeof landingContent.$inferSelect;

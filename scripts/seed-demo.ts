@@ -111,7 +111,7 @@ async function main() {
     const tmp = `tmp-${crypto.randomUUID()}`;
     const id = db
       .insert(listings)
-      .values({ ...rest, features: [...rest.features], refNo: tmp, slug: tmp, agentId: agentIds[agent], isFeatured: featured, isPublished: true })
+      .values({ ...rest, features: [...rest.features], refNo: tmp, slug: tmp, agentId: agentIds[agent], isFeatured: featured, isPublished: true, publishedAt: new Date() })
       .returning({ id: listings.id })
       .get().id;
     const refNo = `ER-${1000 + id}`;

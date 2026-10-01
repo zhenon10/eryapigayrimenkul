@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
 import { Breadcrumbs } from "@/components/site/breadcrumbs";
 import { ListingsView } from "@/components/site/listings-view";
+import { RichText } from "@/components/site/rich-text";
 import { PageHero } from "@/components/site/section";
 import { DISTRICTS, LISTING_STATUSES, LISTING_TYPES, labelOf } from "@/lib/constants";
 import { formatNumber } from "@/lib/format";
-import { PAGE_SIZE, countFor, getLandingCounts, searchListings } from "@/lib/queries";
+import { PAGE_SIZE, countFor, getLandingContent, getLandingCounts, searchListings } from "@/lib/queries";
 import {
   absoluteUrl,
   landingDescription,
@@ -37,7 +38,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const path = landingPath(landing);
   return {
     title: sayfa > 1 ? `${landingTitle(landing)} – Sayfa ${sayfa}` : landingTitle(landing),
-    description: landingDescription(landing, count, getSettings().companyName),
+    description: getLandingContent(path)?.metaDescription || landingDescription(landing, count, getSettings().companyName),
     alternates: { canonical: sayfa > 1 ? `${path}?sayfa=${sayfa}` : path },
     // İlanı olmayan kombinasyonlar ziyaretçiye açık ama dizine kapalı: boş sayfa SEO'ya zarar verir.
     robots: count === 0 ? { index: false, follow: true } : undefined,
@@ -51,6 +52,7 @@ export default async function LandingPage(props: Props) {
   const filters = { durum: l.status, tip: l.type, ilce: l.district, sayfa };
   const result = searchListings(filters);
   const path = landingPath(l);
+  const content = getLandingContent(path);
   const statusLabel = labelOf(LISTING_STATUSES, l.status);
 
   const crumbs = [
@@ -78,7 +80,7 @@ export default async function LandingPage(props: Props) {
           }}
         />
       )}
-      <PageHero eyebrow="Balıkesir Emlak" title={landingHeading(l)} text={landingIntro(l, s.companyName)}>
+      <PageHero eyebrow="Balıkesir Emlak" title={landingHeading(l)} text={content?.intro || landingIntro(l, s.companyName)}>
         <p className="text-micro font-semibold tracking-wide text-accent-bright">{formatNumber(result.total)} ilan</p>
       </PageHero>
       <ListingsView
@@ -87,6 +89,16 @@ export default async function LandingPage(props: Props) {
         pageHref={(p) => (p > 1 ? `${path}?sayfa=${p}` : path)}
         hasFilters
       />
+      {content?.body && (
+        <section aria-labelledby="bolge-rehberi" className="container-site pb-16">
+          <div className="max-w-3xl border-t border-line pt-12">
+            <h2 id="bolge-rehberi" className="mb-6 font-display text-headline-md font-semibold">
+              {landingHeading(l).replace(/ İlanları$/, "")} Rehberi
+            </h2>
+            <RichText text={content.body} className="flex flex-col gap-4 text-[15px] leading-7 text-ink/85" />
+          </div>
+        </section>
+      )}
       <RelatedLinks landing={l} />
     </>
   );
