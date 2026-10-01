@@ -46,10 +46,10 @@ export default function HomePage() {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/75 to-ink/30" aria-hidden />
 
-        <div className="container-site relative flex flex-col gap-8 pt-16 pb-16 md:pt-20 md:pb-20">
+        <div className="container-site relative flex flex-col gap-6 pt-10 pb-10 md:gap-8 md:pt-20 md:pb-20">
           <div className="flex max-w-3xl flex-col gap-4">
             <h1 className="font-display text-[2.25rem] leading-[1.12] font-semibold text-balance md:text-[3rem]">{s.heroTitle}</h1>
-            {s.heroText && <p className="max-w-2xl text-[17px] leading-relaxed text-white/75">{s.heroText}</p>}
+            {s.heroText && <p className="max-w-2xl leading-relaxed text-white/75 md:text-[17px]">{s.heroText}</p>}
             {s.licenseNo && (
               <p className="flex items-center gap-1.5 text-micro text-ink-muted">
                 <BadgeCheck className="size-4 text-accent-bright" aria-hidden />

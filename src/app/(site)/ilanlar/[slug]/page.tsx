@@ -152,6 +152,10 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
             <p className="flex items-center gap-1.5 text-sm text-muted">
               <MapPin className="size-4 text-accent" aria-hidden /> {location}
             </p>
+            {/* Mobilde fiyat başlığın hemen altında; masaüstünde sağdaki kartta. */}
+            <p className="tabular text-[1.75rem] font-extrabold tracking-tight lg:hidden">
+              {formatPrice(l.price, l.status)}
+            </p>
             {l.summary && <p className="text-[17px] leading-7 text-ink/85">{l.summary}</p>}
           </header>
 
@@ -221,7 +225,7 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
         <aside className="lg:col-span-4">
           <div className="flex flex-col gap-6 lg:sticky lg:top-36">
             <div className="card flex flex-col gap-5 p-6">
-              <div>
+              <div className="hidden lg:block">
                 <span className="text-micro font-bold tracking-[0.08em] text-muted uppercase">
                   {l.status === "kiralik" ? "Aylık Kira" : "Satış Fiyatı"}
                 </span>

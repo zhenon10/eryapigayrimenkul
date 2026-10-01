@@ -35,7 +35,7 @@ export function HeroSearch() {
             <TypeOptions />
           </Select>
         </Field>
-        <fieldset className="flex flex-col gap-1.5 sm:col-span-2 lg:col-span-4">
+        <fieldset className="hidden flex-col gap-1.5 sm:col-span-2 sm:flex lg:col-span-4">
           <legend className="label mb-1.5 flex items-center gap-1.5">
             <Wallet className="size-4 text-accent" aria-hidden />
             Fiyat Aralığı (₺)

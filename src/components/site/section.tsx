@@ -17,9 +17,9 @@ export function SectionHeading({ title, text, children }: { title: ReactNode; te
 export function PageHero({ title, text, children }: { title: ReactNode; text?: ReactNode; children?: ReactNode }) {
   return (
     <section className="border-b border-line bg-canvas">
-      <div className="container-site flex flex-col gap-3 py-10 md:py-12">
-        <h1 className="max-w-3xl font-display text-[2rem] leading-tight font-semibold text-ink md:text-headline">{title}</h1>
-        {text && <p className="max-w-2xl text-[15px] leading-7 text-muted">{text}</p>}
+      <div className="container-site flex flex-col gap-3 py-7 md:py-12">
+        <h1 className="max-w-3xl font-display text-[1.75rem] leading-tight font-semibold text-balance text-ink md:text-headline">{title}</h1>
+        {text && <p className="line-clamp-3 max-w-2xl text-[15px] leading-7 text-muted md:line-clamp-none">{text}</p>}
         {children}
       </div>
     </section>

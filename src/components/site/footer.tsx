@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Instagram } from "@/components/icons";
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Instagram, WhatsApp } from "@/components/icons";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { DISTRICTS, LISTING_TYPES } from "@/lib/constants";
 import { countFor, getLandingCounts } from "@/lib/queries";
@@ -30,8 +30,8 @@ export function Footer({ settings: s }: { settings: SiteSettings }) {
   const popular = popularSearches();
   return (
     <footer className="mt-auto bg-ink text-ink-muted">
-      <div className="container-site grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-12">
-        <div className="flex flex-col gap-5 lg:col-span-4">
+      <div className="container-site grid grid-cols-2 gap-x-6 gap-y-10 py-12 md:gap-12 md:py-16 lg:grid-cols-12">
+        <div className="col-span-2 flex flex-col gap-5 lg:col-span-4">
           <Logo tone="light" />
           {s.heroText && <p className="max-w-sm text-sm leading-6">{s.heroText}</p>}
           {s.licenseNo && <p className="text-micro tracking-wide">Yetki Belge No: {s.licenseNo}</p>}
@@ -54,7 +54,7 @@ export function Footer({ settings: s }: { settings: SiteSettings }) {
           ))}
         </FooterCol>
 
-        <FooterCol title="İletişim" className="lg:col-span-4">
+        <FooterCol title="İletişim" className="col-span-2 lg:col-span-4">
           {s.address && (
             <span className="flex gap-2.5 text-sm">
               <MapPin className="mt-0.5 size-4 shrink-0 text-accent-bright" aria-hidden />
@@ -74,7 +74,7 @@ export function Footer({ settings: s }: { settings: SiteSettings }) {
               rel="noopener noreferrer"
               className="flex items-center gap-2.5 text-sm hover:text-white"
             >
-              <MessageCircle className="size-4 text-accent-bright" aria-hidden />
+              <WhatsApp className="size-4 text-accent-bright" aria-hidden />
               WhatsApp ile yazın
             </a>
           )}

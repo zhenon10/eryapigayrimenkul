@@ -85,7 +85,7 @@ export function Header({ settings: s }: { settings: SiteSettings }) {
               <Calculator className="size-4" aria-hidden />
               Ücretsiz Değerleme
             </Link>
-            <MobileNav items={items} phone={s.phone} />
+            <MobileNav items={items} phone={s.phone} whatsapp={s.whatsapp} />
           </div>
         </div>
       </div>

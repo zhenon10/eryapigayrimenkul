@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Calculator, Menu, Phone, Search, X } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { telHref } from "@/lib/format";
+import { telHref, whatsappHref } from "@/lib/format";
+import { WhatsApp } from "@/components/icons";
 import type { NavItem } from "./header";
 
 function useIsActive() {
@@ -54,20 +56,43 @@ export function NavLinks({ items, static: isStatic }: { items: NavItem[]; static
   return <ActiveLinks items={items} className={cls} />;
 }
 
-export function MobileNav({ items, phone }: { items: NavItem[]; phone: string }) {
+export function MobileNav({ items, phone, whatsapp }: { items: NavItem[]; phone: string; whatsapp: string }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
+  const close = () => setOpen(false);
+
   return (
-    <div className="xl:hidden">
+    <div className="flex items-center gap-2 xl:hidden">
+      {whatsapp ? (
+        <a
+          href={whatsappHref(whatsapp)}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="WhatsApp ile yazın"
+          className="btn btn-sm border border-line px-2.5 text-ink"
+        >
+          <WhatsApp className="size-5" />
+        </a>
+      ) : (
+        phone && (
+          <a href={telHref(phone)} aria-label={`Ara: ${phone}`} className="btn btn-sm border border-line px-2.5 text-ink">
+            <Phone className="size-5" />
+          </a>
+        )
+      )}
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="mobile-menu"
         aria-label="Menüyü aç"
@@ -75,41 +100,41 @@ export function MobileNav({ items, phone }: { items: NavItem[]; phone: string })
       >
         <Menu className="size-5" />
       </button>
-      {open && (
-        <div id="mobile-menu" className="fixed inset-0 z-[60] overflow-y-auto bg-white">
-          <div className="container-site flex h-20 items-center justify-between border-b border-line">
-            <span className="font-display text-headline-sm font-semibold">Menü</span>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Menüyü kapat"
-              className="btn btn-sm border border-line px-2.5"
-            >
-              <X className="size-5" />
-            </button>
-          </div>
-          <nav aria-label="Mobil menü" className="container-site flex flex-col py-4">
-            <ActiveLinks
-              items={items}
-              onNavigate={() => setOpen(false)}
-              className="border-b border-line py-3.5 text-base font-semibold"
-            />
-          </nav>
-          <div className="container-site flex flex-col gap-3 pb-8">
-            <Link href="/ilanlar" className="btn-outline" onClick={() => setOpen(false)}>
-              <Search className="size-4" /> İlan Ara
-            </Link>
-            <Link href="/degerleme" className="btn-accent" onClick={() => setOpen(false)}>
-              <Calculator className="size-4" /> Ücretsiz Değerleme
-            </Link>
-            {phone && (
-              <a href={telHref(phone)} className="btn-primary">
-                <Phone className="size-4" /> {phone}
-              </a>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Üst bardaki backdrop-filter sabit konumlu öğeleri kendi kutusuna hapsettiği için
+          menü doğrudan <body> altına çizilir. */}
+      {open &&
+        createPortal(
+          <div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menü" className="fixed inset-0 z-[60] overflow-y-auto bg-white">
+            <div className="container-site flex h-20 items-center justify-between border-b border-line">
+              <span className="font-display text-headline-sm font-semibold">Menü</span>
+              <button type="button" onClick={close} aria-label="Menüyü kapat" className="btn btn-sm border border-line px-2.5">
+                <X className="size-5" />
+              </button>
+            </div>
+            <nav aria-label="Mobil menü" className="container-site flex flex-col py-4">
+              <ActiveLinks items={items} onNavigate={close} className="border-b border-line py-3.5 text-base font-semibold" />
+            </nav>
+            <div className="container-site flex flex-col gap-3 pb-8">
+              {whatsapp && (
+                <a href={whatsappHref(whatsapp)} target="_blank" rel="noopener noreferrer" className="btn-accent">
+                  <WhatsApp className="size-4" /> WhatsApp ile yazın
+                </a>
+              )}
+              {phone && (
+                <a href={telHref(phone)} className="btn-primary">
+                  <Phone className="size-4" /> {phone}
+                </a>
+              )}
+              <Link href="/degerleme" className="btn-outline" onClick={close}>
+                <Calculator className="size-4" /> Ücretsiz değerleme
+              </Link>
+              <Link href="/ilanlar" className="btn-outline" onClick={close}>
+                <Search className="size-4" /> İlan ara
+              </Link>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

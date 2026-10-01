@@ -21,7 +21,7 @@ type Props = {
 export function ListingsView({ filters: f, result, pageHref, hasFilters, children }: Props) {
   const rooms = getRoomOptions();
   return (
-    <div className="container-site grid gap-10 py-12 lg:grid-cols-[18rem_1fr]">
+    <div className="container-site grid gap-6 py-6 md:py-12 lg:grid-cols-[18rem_1fr] lg:gap-10">
       <aside>
         <div className="card">
           {/* Mobilde filtreler bir düğmeyle açılır (JS gerektirmeyen checkbox yöntemi). */}

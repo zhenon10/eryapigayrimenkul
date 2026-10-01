@@ -13,7 +13,7 @@ function describe(f: SearchFilters) {
     f.durum && labelOf(LISTING_STATUSES, f.durum),
     f.tip ? labelOf(LISTING_TYPES, f.tip) : f.kategori && labelOf(TYPE_GROUPS, f.kategori),
   ].filter(Boolean);
-  return parts.length ? `${parts.join(" ")} İlanları` : "Tüm İlanlar";
+  return parts.length ? `${parts.join(" ")} İlanları` : "Tüm ilanlar";
 }
 
 /**
