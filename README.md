@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Er Yapı Emlak
 
-## Getting Started
+Balıkesir merkezli emlak ofisi için kurumsal site ve yönetim paneli.
+Görsel dil Stitch'te hazırlanan **Aegean Architectural Prestige** tasarımına dayanır
+(lacivert `#0F172A`, amber `#D97706`, Playfair Display + Plus Jakarta Sans).
 
-First, run the development server:
+## Teknoloji
+
+| Katman | Seçim |
+| --- | --- |
+| Uygulama | Next.js 16 (App Router, Server Actions), React 19, TypeScript |
+| Stil | Tailwind CSS v4, tasarım token'ları `src/app/globals.css` içinde |
+| Veri | SQLite (better-sqlite3) + Drizzle ORM; migration'lar `drizzle/` altında, ilk bağlantıda otomatik uygulanır |
+| Görseller | sharp ile WebP'ye çevrilir (480 / 1024 / 1920 px), `storage/uploads` altında saklanır, `/media/...` üzerinden sunulur |
+| Oturum | argon2 şifre özeti + veritabanında saklanan oturum (httpOnly çerez) |
+
+## Kurulum
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local              # gerekirse düzenleyin
+npm run user:create -- --email siz@firma.com --name "Ad Soyad"   # şifre ekrana yazılır
+npm run dev                              # http://localhost:3000, panel: /panel
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Geliştirme için örnek veri isterseniz `npm run seed:demo` (Stitch tasarımındaki 6 ilan ve 3 danışman).
+**Bu veriler temsilidir, canlıya taşımayın.**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Yapı
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/(site)/        Herkese açık sayfalar: ana sayfa, /ilanlar, /ilanlar/[slug], /danismanlar, /degerleme, /iletisim, metin sayfaları
+  app/panel/         Yönetim paneli: ilanlar, danışmanlar, talepler, site ayarları, kullanıcılar
+  app/media/         Yüklenen görsellerin sunulduğu rota
+  app/api/panel/     Görsel yükleme uç noktası
+  components/site/   Site bileşenleri (kart, arama, formlar, galeri…)
+  components/panel/  Panel bileşenleri
+  db/                Drizzle şeması ve bağlantı
+  lib/               Sorgular, oturum, görsel işleme, sabitler (ilçeler, ilan tipleri)
+scripts/             CLI: kullanıcı oluşturma, demo verisi
+```
 
-## Learn More
+## İçerik kuralları
 
-To learn more about Next.js, take a look at the following resources:
+- Site ayarlarında (telefon, adres, yetki belge no, rakamlar, KVKK metni vb.) **boş bırakılan her alan sitede gizlenir.**
+  Böylece doğrulanmamış rakam ya da örnek iletişim bilgisi yayına çıkmaz.
+- KVKK, gizlilik ve hakkımızda sayfaları metin girilene kadar 404 döner ve menüde görünmez.
+- Fotoğrafı olmayan ilan yayına alınamaz. İlk fotoğraf kapak olur.
+- İlan adresi `başlık-er-1001` biçimindedir; başlık değişirse eski adres yenisine kalıcı olarak yönlendirilir.
+- Panelden yapılan her değişiklik sitenin önbelleğini tazeler; sayfalar ayrıca saatte bir yenilenir.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Yayına alma
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Uygulama yerel diske yazdığı için (SQLite ve görseller) **kalıcı diski olan tek bir Node sunucusunda** çalıştırılmalıdır
+(VPS, Coolify, Docker vb.). Vercel gibi sunucusuz platformlara uygun değildir.
 
-## Deploy on Vercel
+```bash
+npm ci && npm run build
+SITE_URL=https://www.alanadiniz.com npm start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `data/` (veritabanı) ve `storage/` (görseller) klasörlerini **yedekleyin**; sitenin tüm içeriği bunlardadır.
+  Çalışırken güvenli yedek için: `sqlite3 data/eryapi.db ".backup yedek.db"`.
+- Önünde nginx varsa görsel yüklemeleri için `client_max_body_size 16m;` ayarlayın.
+- Giriş denemesi ve form gönderimi sınırlamaları bellekte tutulur; tek süreçte çalıştırın (cluster/PM2 çoklu süreç kullanmayın).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Komutlar
+
+| Komut | Açıklama |
+| --- | --- |
+| `npm run dev` | Geliştirme sunucusu |
+| `npm run build` / `npm start` | Production derleme / çalıştırma |
+| `npm run typecheck` / `npm run lint` | Tip ve lint kontrolü |
+| `npm run db:generate` | Şema değişikliğinden sonra yeni migration üretir |
+| `npm run user:create -- --email … --name …` | Panel kullanıcısı ekler ya da şifresini sıfırlar (`PASSWORD=` ile şifre verilebilir) |
+| `npm run seed:demo` | Örnek veri (yalnızca geliştirme) |
