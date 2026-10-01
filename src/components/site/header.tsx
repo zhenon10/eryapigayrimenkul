@@ -12,9 +12,9 @@ export type NavItem = { href: string; label: string };
 export function navItems(s: SiteSettings): NavItem[] {
   return [
     { href: "/", label: "Ana Sayfa" },
-    { href: "/ilanlar?durum=satilik", label: "Satılık" },
-    { href: "/ilanlar?durum=kiralik", label: "Kiralık" },
-    { href: "/ilanlar?kategori=arsa", label: "Arsa & Tarla" },
+    { href: "/satilik", label: "Satılık" },
+    { href: "/kiralik", label: "Kiralık" },
+    { href: "/satilik/arsa", label: "Arsa" },
     { href: "/ilanlar?kategori=ticari", label: "Ticari" },
     { href: "/danismanlar", label: "Danışmanlar" },
     ...(s.aboutText ? [{ href: "/hakkimizda", label: "Hakkımızda" }] : []),

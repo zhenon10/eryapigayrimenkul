@@ -50,6 +50,22 @@ scripts/             CLI: kullanıcı oluşturma, demo verisi
 - İlan adresi `başlık-er-1001` biçimindedir; başlık değişirse eski adres yenisine kalıcı olarak yönlendirilir.
 - Panelden yapılan her değişiklik sitenin önbelleğini tazeler; sayfalar ayrıca saatte bir yenilenir.
 
+## SEO
+
+- **Bölge/kategori sayfaları:** `/satilik`, `/kiralik/daire`, `/satilik/edremit`, `/satilik/villa/edremit`.
+  Başlık, açıklama ve tanıtım metni otomatik üretilir (ör. "Altıeylül Kiralık Daire İlanları – Balıkesir").
+  Yayında ilanı olmayan kombinasyonlar ziyaretçiye açıktır ama `noindex` alır ve sitemap'e girmez.
+- `/ilanlar?durum=…&tip=…&ilce=…` adresleri karşılık gelen bölge sayfasına 308 ile yönlendirilir.
+  Fiyat, kelime veya sıralama içeren filtreli adresler `noindex`'tir.
+- **Yapılandırılmış veri:**
+  - Tüm sayfalarda ofis bilgisi (`RealEstateAgent`; adres ve telefon site ayarlarından gelir).
+  - İlanlarda `RealEstateListing` ve `BreadcrumbList`.
+  - Bölge sayfalarında `ItemList`.
+- **Canlıda mutlaka `SITE_URL` tanımlayın.** Canonical, sitemap ve yapılandırılmış veri adresleri buradan üretilir.
+- Yayından sonra:
+  - Siteyi Google Search Console'a ekleyip `/sitemap.xml`'i gönderin.
+  - Google İşletme Profili'ni açın. İşletme adı, adres ve telefon sitedekiyle birebir aynı olmalı.
+
 ## Yayına alma
 
 Uygulama yerel diske yazdığı için (SQLite ve görseller) **kalıcı diski olan tek bir Node sunucusunda** çalıştırılmalıdır

@@ -76,5 +76,6 @@ export function labelOf(list: readonly { value: string; label: string }[], value
 export const typesInGroup = (group: string) =>
   LISTING_TYPES.filter((t) => t.group === group).map((t) => t.value as ListingType);
 
-/** Arsa tipleri oda/banyo yerine imar/ada-parsel bilgisi gösterir. */
-export const isLandType = (type: string) => LISTING_TYPES.find((t) => t.value === type)?.group === "arsa";
+/** Arsa niteliğindeki tipler (ticari parsel dahil) oda/banyo yerine imar/ada-parsel bilgisi gösterir. */
+export const isLandType = (type: string) =>
+  type === "ticari-arsa" || LISTING_TYPES.find((t) => t.value === type)?.group === "arsa";

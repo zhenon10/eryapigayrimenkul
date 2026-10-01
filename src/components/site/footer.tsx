@@ -2,14 +2,32 @@ import Link from "next/link";
 import { Instagram } from "@/components/icons";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Logo } from "@/components/logo";
-import { DISTRICTS } from "@/lib/constants";
+import { DISTRICTS, LISTING_TYPES } from "@/lib/constants";
+import { countFor, getLandingCounts } from "@/lib/queries";
+import { landingHeading, landingPath, type Landing } from "@/lib/seo";
 import { instagramHref, telHref, whatsappHref } from "@/lib/format";
 import type { SiteSettings } from "@/lib/settings-schema";
 
 const FEATURED_DISTRICTS = ["karesi", "altieylul", "edremit", "ayvalik", "burhaniye", "bandirma"];
 
+/** İlanı bulunan en dolu kategori ve ilçe sayfaları; iç bağlantı ağını güçlendirir. */
+function popularSearches() {
+  const rows = getLandingCounts();
+  const candidates: (Landing & { n: number })[] = [];
+  for (const status of ["satilik", "kiralik"] as const) {
+    for (const t of LISTING_TYPES) candidates.push({ status, type: t.value, n: countFor(rows, { status, type: t.value }) });
+    for (const d of DISTRICTS) candidates.push({ status, district: d.value, n: countFor(rows, { status, district: d.value }) });
+  }
+  return candidates
+    .filter((c) => c.n > 0)
+    .sort((a, b) => b.n - a.n)
+    .slice(0, 12)
+    .map((c) => ({ href: landingPath(c), label: landingHeading(c).replace(/ İlanları$/, "") }));
+}
+
 export function Footer({ settings: s }: { settings: SiteSettings }) {
   const year = new Date().getFullYear();
+  const popular = popularSearches();
   return (
     <footer className="mt-auto bg-ink text-ink-muted">
       <div className="container-site grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-12">
@@ -20,16 +38,16 @@ export function Footer({ settings: s }: { settings: SiteSettings }) {
         </div>
 
         <FooterCol title="Portföy" className="lg:col-span-2">
-          <FooterLink href="/ilanlar?durum=satilik">Satılık İlanlar</FooterLink>
-          <FooterLink href="/ilanlar?durum=kiralik">Kiralık İlanlar</FooterLink>
-          <FooterLink href="/ilanlar?kategori=arsa">Arsa & Tarla</FooterLink>
+          <FooterLink href="/satilik">Satılık İlanlar</FooterLink>
+          <FooterLink href="/kiralik">Kiralık İlanlar</FooterLink>
+          <FooterLink href="/satilik/arsa">Satılık Arsa</FooterLink>
           <FooterLink href="/ilanlar?kategori=ticari">Ticari Gayrimenkul</FooterLink>
           <FooterLink href="/degerleme">Ücretsiz Değerleme</FooterLink>
         </FooterCol>
 
         <FooterCol title="Bölgeler" className="lg:col-span-2">
           {DISTRICTS.filter((d) => FEATURED_DISTRICTS.includes(d.value)).map((d) => (
-            <FooterLink key={d.value} href={`/ilanlar?ilce=${d.value}`}>
+            <FooterLink key={d.value} href={`/satilik/${d.value}`}>
               {d.label}
             </FooterLink>
           ))}
@@ -77,6 +95,18 @@ export function Footer({ settings: s }: { settings: SiteSettings }) {
           )}
         </FooterCol>
       </div>
+      {popular.length > 0 && (
+        <div className="border-t border-white/10">
+          <nav aria-label="Popüler aramalar" className="container-site flex flex-wrap gap-x-5 gap-y-2 py-6 text-micro">
+            <span className="font-bold tracking-[0.08em] text-white uppercase">Popüler aramalar</span>
+            {popular.map((p) => (
+              <Link key={p.href} href={p.href} className="hover:text-white">
+                {p.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
       <div className="border-t border-white/10">
         <div className="container-site flex flex-col gap-3 py-6 text-micro sm:flex-row sm:items-center sm:justify-between">
           <span>

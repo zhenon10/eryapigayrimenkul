@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowDown,
@@ -26,11 +27,18 @@ import { getSettings } from "@/lib/settings";
 
 export const revalidate = 3600;
 
+export const metadata: Metadata = {
+  title: { absolute: "Er Yapı Emlak | Balıkesir Satılık ve Kiralık Emlak İlanları" },
+  description:
+    "Balıkesir Karesi, Altıeylül, Edremit ve Ayvalık'ta satılık ve kiralık daire, villa, arsa ve iş yeri ilanları. Ücretsiz değerleme için Er Yapı Emlak'a ulaşın.",
+  alternates: { canonical: "/" },
+};
+
 const CATEGORY_LINKS = [
-  { href: "/ilanlar?durum=satilik&kategori=konut", label: "Satılık Konut" },
-  { href: "/ilanlar?durum=kiralik", label: "Kiralık" },
-  { href: "/ilanlar?tip=villa", label: "Villalar" },
-  { href: "/ilanlar?kategori=arsa", label: "Arsa & Tarla" },
+  { href: "/satilik/daire", label: "Satılık Daire" },
+  { href: "/kiralik/daire", label: "Kiralık Daire" },
+  { href: "/satilik/villa", label: "Satılık Villa" },
+  { href: "/satilik/arsa", label: "Satılık Arsa" },
 ];
 
 const REASONS = [

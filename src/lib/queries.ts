@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { z } from "zod";
 import { and, asc, count, desc, eq, gte, inArray, like, lte, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
@@ -265,4 +266,20 @@ export function getSitemapEntries() {
       .where(eq(agents.isActive, true))
       .all(),
   };
+}
+
+/** Yayındaki ilanların durum/tip/ilçe kırılımı: bölge sayfaları, iç bağlantılar ve sitemap için. */
+export const getLandingCounts = cache(() =>
+  db
+    .select({ status: listings.status, type: listings.type, district: listings.district, n: count() })
+    .from(listings)
+    .where(eq(listings.isPublished, true))
+    .groupBy(listings.status, listings.type, listings.district)
+    .all(),
+);
+
+export function countFor(rows: ReturnType<typeof getLandingCounts>, f: { status: string; type?: string; district?: string }) {
+  return rows
+    .filter((r) => r.status === f.status && (!f.type || r.type === f.type) && (!f.district || r.district === f.district))
+    .reduce((sum, r) => sum + r.n, 0);
 }

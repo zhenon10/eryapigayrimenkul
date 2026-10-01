@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { Check, ChevronRight, ExternalLink, MapPin, PlayCircle, Video } from "lucide-react";
+import { Check, ExternalLink, MapPin, PlayCircle, Video } from "lucide-react";
+import { JsonLd } from "@/components/json-ld";
+import { Breadcrumbs } from "@/components/site/breadcrumbs";
 import { AgentAvatar, AgentContactButtons } from "@/components/site/agent-card";
 import { Gallery } from "@/components/site/gallery";
 import { InquiryForm } from "@/components/site/inquiry-form";
 import { ListingCard } from "@/components/site/listing-card";
-import { DISTRICTS, LISTING_STATUSES, LISTING_TYPES, isLandType, labelOf } from "@/lib/constants";
+import { DISTRICTS, LISTING_STATUSES, LISTING_TYPES, isLandType, labelOf, type District, type ListingType } from "@/lib/constants";
 import { formatDate, formatNumber, formatPrice, telHref, whatsappHref } from "@/lib/format";
 import { mediaUrl } from "@/lib/media-url";
 import { findCurrentListingSlug, getListingBySlug, getSimilarListings } from "@/lib/queries";
+import { absoluteUrl, landingPath, typeSeoLabel } from "@/lib/seo";
 import { getSettings } from "@/lib/settings";
 
 export const revalidate = 3600;
@@ -23,11 +26,17 @@ export async function generateMetadata({ params }: PageProps<"/ilanlar/[slug]">)
   const listing = getListingBySlug((await params).slug);
   if (!listing) return {};
   const cover = listing.images[0];
+  // Başlık konum ve tipi de içersin: "… – Altıeylül Kiralık Daire" aramalarla eşleşir.
+  const where = `${labelOf(DISTRICTS, listing.district)} ${labelOf(LISTING_STATUSES, listing.status)} ${typeSeoLabel(listing.type)}`;
   return {
-    title: listing.title,
-    description: listing.summary || listing.description.slice(0, 160),
+    title: `${listing.title} – ${where}`,
+    description: (listing.summary || listing.description).slice(0, 160),
     alternates: { canonical: `/ilanlar/${listing.slug}` },
-    openGraph: { images: cover ? [{ url: mediaUrl(cover.key, "lg"), width: cover.width, height: cover.height }] : [] },
+    openGraph: {
+      type: "article",
+      title: listing.title,
+      images: cover ? [{ url: mediaUrl(cover.key, "lg"), width: cover.width, height: cover.height }] : [],
+    },
   };
 }
 
@@ -72,33 +81,50 @@ export default async function ListingPage({ params }: PageProps<"/ilanlar/[slug]
   const contactWhatsapp = l.agent?.whatsapp || s.whatsapp;
   const waText = `Merhaba, ${l.refNo} numaralı "${l.title}" ilanı hakkında bilgi almak istiyorum.`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
+  const url = absoluteUrl(`/ilanlar/${l.slug}`);
+  const statusLabel = labelOf(LISTING_STATUSES, l.status);
+  const listingLd = {
     "@type": "RealEstateListing",
     name: l.title,
     description: l.summary || l.description,
-    url: `/ilanlar/${l.slug}`,
+    url,
     datePosted: l.createdAt.toISOString(),
-    image: l.images.map((i) => mediaUrl(i.key, "lg")),
-    offers: { "@type": "Offer", price: l.price, priceCurrency: "TRY" },
-    address: { "@type": "PostalAddress", addressLocality: district, addressRegion: "Balıkesir", addressCountry: "TR" },
+    dateModified: l.updatedAt.toISOString(),
+    image: l.images.map((i) => absoluteUrl(mediaUrl(i.key, "lg"))),
+    offers: {
+      "@type": "Offer",
+      price: l.price,
+      priceCurrency: "TRY",
+      businessFunction: l.status === "kiralik" ? "http://purl.org/goodrelations/v1#LeaseOut" : "http://purl.org/goodrelations/v1#Sell",
+      availability: "https://schema.org/InStock",
+      url,
+    },
+    contentLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: district,
+        addressRegion: "Balıkesir",
+        addressCountry: "TR",
+        ...(l.neighborhood ? { streetAddress: l.neighborhood } : {}),
+      },
+      ...(l.lat != null && l.lng != null ? { geo: { "@type": "GeoCoordinates", latitude: l.lat, longitude: l.lng } } : {}),
+    },
+    ...(l.areaGross ? { floorSize: { "@type": "QuantitativeValue", value: l.areaGross, unitCode: "MTK" } } : {}),
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-
-      <div className="border-b border-line bg-canvas">
-        <nav aria-label="Konum" className="container-site flex items-center gap-1.5 overflow-x-auto py-3 text-micro whitespace-nowrap text-muted">
-          <Link href="/" className="hover:text-ink">Ana Sayfa</Link>
-          <ChevronRight className="size-3.5" aria-hidden />
-          <Link href="/ilanlar" className="hover:text-ink">İlanlar</Link>
-          <ChevronRight className="size-3.5" aria-hidden />
-          <Link href={`/ilanlar?ilce=${l.district}`} className="hover:text-ink">{district}</Link>
-          <ChevronRight className="size-3.5" aria-hidden />
-          <span className="truncate text-ink" aria-current="page">{l.title}</span>
-        </nav>
-      </div>
+      <JsonLd data={listingLd} />
+      <Breadcrumbs
+        items={[
+          { name: "Ana Sayfa", path: "/" },
+          { name: statusLabel, path: `/${l.status}` },
+          { name: `${statusLabel} ${typeSeoLabel(l.type)}`, path: landingPath({ status: l.status, type: l.type as ListingType }) },
+          { name: district, path: landingPath({ status: l.status, type: l.type as ListingType, district: l.district as District }) },
+          { name: l.title, path: `/ilanlar/${l.slug}` },
+        ]}
+      />
 
       <div className="container-site grid gap-10 py-10 lg:grid-cols-12">
         <div className="flex flex-col gap-10 lg:col-span-8">

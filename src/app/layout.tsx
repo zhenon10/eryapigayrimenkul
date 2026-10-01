@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -15,8 +16,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
-  title: { default: "Er Yapı Emlak | Balıkesir Gayrimenkul & Yatırım", template: "%s | Er Yapı Emlak" },
+  metadataBase: new URL(SITE_URL),
+  title: { default: "Er Yapı Emlak | Balıkesir Satılık ve Kiralık Emlak İlanları", template: "%s | Er Yapı Emlak" },
   description:
     "Balıkesir Karesi, Altıeylül ve Körfez bölgesinde satılık ve kiralık konut, villa, arsa ve ticari gayrimenkul portföyü.",
   openGraph: { locale: "tr_TR", type: "website", siteName: "Er Yapı Emlak" },
